@@ -4,7 +4,7 @@ import Header from "./components/Header/Header";
 import ColorScheme from "./components/ColorScheme/ColorScheme";
 import CopiedMessage from "./components/CopiedMessage/CopiedMessage";
 import SavedColors from "./components/SavedColors/SavedColors";
-
+import FetchedPhotos from "./components/FetchedPhotos/FetchedPhotos";
 import "./App.css";
 
 function App() {
@@ -21,8 +21,8 @@ function App() {
     hex: "",
     copied: false,
   });
-  const [colorRange, setColorRange] = useState("");
-
+  const [colorRange, setColorRange] = useState("yellow");
+  const [fetchedPhotos, setFetchedPhotos] = useState([])
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -31,21 +31,23 @@ function App() {
       [name]: value,
     }));
   }
-  const hsl = useMemo(() => (
-    schemeColors[0]
-      ? {
-          h: schemeColors[0].hsl.h,
-          s: schemeColors[0].hsl.s,
-          l: schemeColors[0].hsl.l,
-        }
-      : {
-          h: 47,
-          s: 96,
-          l: 52,
-        }
-  ) , [schemeColors]);
+  const hsl = useMemo(
+    () =>
+      schemeColors[0]
+        ? {
+            h: schemeColors[0].hsl.h,
+            s: schemeColors[0].hsl.s,
+            l: schemeColors[0].hsl.l,
+          }
+        : {
+            h: 47,
+            s: 96,
+            l: 52,
+          },
+    [schemeColors]
+  );
   // Fetches selected scheme colors based on data stored in state
-  const fetchSchemeColors = useCallback(()=> {
+  const fetchSchemeColors = useCallback(() => {
     const { selectedColor, selectedScheme, numColors } = schemeData;
     try {
       fetch(
@@ -56,16 +58,23 @@ function App() {
         .then((response) => response.json())
         .then((data) => {
           setSchemeColors((prevSchemeColors) => data.colors);
-          assignColorRange(hsl.h, hsl.s, hsl.l)
         });
     } catch (error) {
       console.log(error);
     }
-  }, [hsl.h, hsl.s, hsl.l, schemeData])
+  }, [schemeData]);
 
-
-  function assignColorRange(h,s, l) {
-    
+  const fetchImages = useCallback(() => {
+    try {
+      fetch(`https://api.unsplash.com/search/photos?page=1&per_page=4&query=${colorRange}&color=${colorRange}&client_id=QxH3vsdpcwpuz9h3-7HMlZv-hOwQm_Obvqi0EU-Et-A`)
+        .then((response) => response.json())
+        .then((data)=> setFetchedPhotos((prevFetchedPhotos) => data.results))
+    } catch (error) {
+      console.log(error);
+    }
+  }, [colorRange]);
+  console.log(fetchedPhotos)
+  function assignColorRange(h, s, l) {
     let assignedColor;
     const notGBOrW = l > 5 && l <= 95 && s > 10;
     if (l > 95) {
@@ -93,21 +102,17 @@ function App() {
     } else if (notGBOrW && h >= 355) {
       assignedColor = "red";
     }
-    setColorRange((prevColorRange) =>  assignedColor);
+    setColorRange((prevColorRange) => assignedColor);
   }
 
   //Manages side effects of accessing colors from API
   useEffect(() => {
     document.body.className = mode;
     fetchSchemeColors();
-  }, [mode, fetchSchemeColors]);
+    assignColorRange(hsl.h, hsl.s, hsl.l);
+    fetchImages();
+  }, [mode, fetchSchemeColors, hsl.h, hsl.s, hsl.l, fetchImages]);
 
-// useEffect(()=> {
-//   fetchSchemeColors()
-// }, [fetchSchemeColors])
-  // schemeData, mode, fetchSchemeColors, hsl, colorRange]
-  console.log(schemeColors);
-  // Click handler for saved schemes
   function handleSaveSchemeClick() {
     setSavedSchemes((prevSavedSchemes) => [schemeColors, ...prevSavedSchemes]);
   }
@@ -158,7 +163,7 @@ function App() {
       }));
     }, 1500);
   }
-  console.log(colorRange)
+  console.log(colorRange);
 
   return (
     <div className={`${mode}`}>
@@ -174,6 +179,7 @@ function App() {
           handleCopyHexClick={handleCopyHexClick}
           copied={copiedHex.copied}
         />
+        <FetchedPhotos images={fetchedPhotos}/>
         <button className={`btn-${mode}`} onClick={handleSaveSchemeClick}>
           Save Color Scheme
         </button>
