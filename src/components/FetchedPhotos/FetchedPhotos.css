@@ -1,0 +1,17 @@
+.fetched-photos {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    margin: 1em;
+    flex-wrap: wrap;
+}
+.image-div {
+    width: 10em;
+    height: 10em;
+    margin: 1em;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 1em;
+    box-shadow: var(--box-shadow);
+}

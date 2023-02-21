@@ -1,14 +1,15 @@
-import "./FetchedPhotos.css"
+import "./FetchedPhotos.css";
 
-function FetchedPhotos({images}) {
-    const photos = images.map((image) => (
-        <img src={image.urls.thumb} key={image.id} alt={image.description} />
-    ))
-    return (
-        <section>
-            {photos}
-        </section>
-    )
+function FetchedPhotos({ images }) {
+  const photos = images.map((image) => (
+    <a href={image.links.html} target="_blank" rel="noreferrer" key={image.id}>
+      <div
+        className="image-div"
+        style={{ backgroundImage: `url(${image.urls.thumb})` }}
+      ></div>
+    </a>
+  ));
+  return <section className="fetched-photos">{photos}</section>;
 }
 
 export default FetchedPhotos;

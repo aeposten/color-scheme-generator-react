@@ -66,7 +66,7 @@ function App() {
 
   const fetchImages = useCallback(() => {
     try {
-      fetch(`https://api.unsplash.com/search/photos?page=1&per_page=4&query=${colorRange}&color=${colorRange}&client_id=QxH3vsdpcwpuz9h3-7HMlZv-hOwQm_Obvqi0EU-Et-A`)
+      fetch(`https://api.unsplash.com/search/photos?page=1&per_page=5&query=cat&color=${colorRange}&client_id=QxH3vsdpcwpuz9h3-7HMlZv-hOwQm_Obvqi0EU-Et-A`)
         .then((response) => response.json())
         .then((data)=> setFetchedPhotos((prevFetchedPhotos) => data.results))
     } catch (error) {
