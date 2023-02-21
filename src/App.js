@@ -7,7 +7,7 @@ import SavedColors from "./components/SavedColors/SavedColors";
 import FetchedPhotos from "./components/FetchedPhotos/FetchedPhotos";
 import "./App.css";
 
-const KEY = process.env.REACT_APP_API_KEY
+const KEY = process.env.REACT_APP_API_KEY;
 function App() {
   // State
   const [schemeColors, setSchemeColors] = useState([]);
@@ -23,7 +23,7 @@ function App() {
     copied: false,
   });
   const [colorRange, setColorRange] = useState("yellow");
-  const [fetchedPhotos, setFetchedPhotos] = useState([])
+  const [fetchedPhotos, setFetchedPhotos] = useState([]);
   function handleChange(e) {
     const { name, value } = e.target;
 
@@ -67,41 +67,59 @@ function App() {
 
   const fetchImages = useCallback(() => {
     try {
-      fetch(`https://api.unsplash.com/search/photos?page=1&per_page=5&query=cat&color=${colorRange}&client_id=${KEY}`)
+      fetch(
+        `https://api.unsplash.com/search/photos?page=1&per_page=5&query=cat&color=${colorRange}&client_id=${KEY}`
+      )
         .then((response) => response.json())
-        .then((data)=> setFetchedPhotos((prevFetchedPhotos) => data.results))
+        .then((data) => setFetchedPhotos((prevFetchedPhotos) => data.results));
     } catch (error) {
       console.log(error);
     }
   }, [colorRange]);
-  console.log(fetchedPhotos)
+  console.log(fetchedPhotos);
+
   function assignColorRange(h, s, l) {
     let assignedColor;
     const notGBOrW = l > 5 && l <= 95 && s > 10;
-    if (l > 95) {
-      assignedColor = "white";
-    } else if (l <= 5) {
-      assignedColor = "black";
-    } else if (s <= 10) {
-      assignedColor = "black_and_white";
-    } else if (notGBOrW && h <= 15) {
-      assignedColor = "red";
-    } else if (notGBOrW && h >= 16 && h <= 35) {
-      assignedColor = "orange";
-    } else if (notGBOrW && h >= 36 && h <= 56) {
-      assignedColor = "yellow";
-    } else if (notGBOrW && h >= 57 && h <= 145) {
-      assignedColor = "green";
-    } else if (notGBOrW && h >= 146 && h <= 170) {
-      assignedColor = "teal";
-    } else if (notGBOrW && h >= 171 && h <= 250) {
-      assignedColor = "blue";
-    } else if (notGBOrW && h >= 251 && h <= 290) {
-      assignedColor = "purple";
-    } else if (notGBOrW && h >= 291 && h <= 354) {
-      assignedColor = "magenta";
-    } else if (notGBOrW && h >= 355) {
-      assignedColor = "red";
+    switch (true) {
+      case l > 95:
+        assignedColor = "white";
+        break;
+      case l <= 5:
+        assignedColor = "black";
+        break;
+      case s <= 10:
+        assignedColor = "black_and_white";
+        break;
+      case notGBOrW && h <= 15:
+        assignedColor = "red";
+        break;
+      case notGBOrW && h >= 16 && h <= 35:
+        assignedColor = "orange";
+        break;
+      case notGBOrW && h >= 36 && h <= 56:
+        assignedColor = "yellow";
+        break;
+      case notGBOrW && h >= 57 && h <= 145:
+        assignedColor = "green";
+        break;
+      case notGBOrW && h >= 146 && h <= 170:
+        assignedColor = "teal";
+        break;
+      case notGBOrW && h >= 171 && h <= 250:
+        assignedColor = "blue";
+        break;
+      case notGBOrW && h >= 251 && h <= 290:
+        assignedColor = "purple";
+        break;
+      case notGBOrW && h >= 291 && h <= 354:
+        assignedColor = "magenta";
+        break;
+      case notGBOrW && h >= 355:
+        assignedColor = "red";
+        break;
+      default:
+        assignedColor = "yellow";
     }
     setColorRange((prevColorRange) => assignedColor);
   }
@@ -180,7 +198,7 @@ function App() {
           handleCopyHexClick={handleCopyHexClick}
           copied={copiedHex.copied}
         />
-        <FetchedPhotos images={fetchedPhotos}/>
+        <FetchedPhotos images={fetchedPhotos} />
         <button className={`btn-${mode}`} onClick={handleSaveSchemeClick}>
           Save Color Scheme
         </button>
